@@ -490,47 +490,18 @@ class ScalaWSSpec extends PlaySpecification with Results with AfterAll {
       //#async-result
     }
 
-    "allow working with clients directly" in withSimpleServer { ws =>
+    "allow simple programmatic configuration" in new WithApplication() {
+      //#simple-ws-custom-client
+      import play.api.libs.ws.ahc._
 
-      //#implicit-client
-      implicit val sslClient = AhcWSClient()
-      // close with sslClient.close() when finished with client
-      val response = WS.clientUrl(url).get()
-      //#implicit-client
+      // usually injected through @Inject()(implicit mat: Materializer)
+      implicit val mat: akka.stream.Materializer = app.materializer
+      val wsClient = AhcWSClient()
+      //#simple-ws-custom-client
 
-      await(response).status must_== OK
+      wsClient.close()
 
-      {
-        //#direct-client
-        val response = sslClient.url(url).get()
-        //#direct-client
-        await(response).status must_== OK
-      }
-
-      sslClient.close()
       ok
-    }
-
-    "allow using pair magnets" in withSimpleServer { ws =>
-      //#pair-magnet
-      object PairMagnet {
-        implicit def fromPair(pair: (WSClient, java.net.URL)) =
-          new WSRequestMagnet {
-            def apply(): WSRequest = {
-              val (client, netUrl) = pair
-              client.url(netUrl.toString)
-            }
-          }
-      }
-
-      import scala.language.implicitConversions
-      import PairMagnet._
-
-      val exampleURL = new java.net.URL(url)
-      val response = WS.url(ws -> exampleURL).get()
-      //#pair-magnet
-
-      await(response).status must_== OK
     }
 
     "allow programmatic configuration" in new WithApplication() {

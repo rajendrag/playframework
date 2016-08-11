@@ -27,9 +27,9 @@ import play.mvc.Http
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
 
-object NettyWSSpec extends WSSpec with NettyIntegrationSpecification
+class NettyWSSpec extends WSSpec with NettyIntegrationSpecification
 
-object AkkaHttpWSSpec extends WSSpec with AkkaHttpIntegrationSpecification
+class AkkaHttpWSSpec extends WSSpec with AkkaHttpIntegrationSpecification
 
 trait WSSpec extends PlaySpecification with ServerIntegrationSpecification {
 
@@ -84,7 +84,7 @@ trait WSSpec extends PlaySpecification with ServerIntegrationSpecification {
     }
 
     def withClient[T](block: play.libs.ws.WSClient => T)(implicit port: Port): T = {
-      val wsClient = play.libs.ws.WS.newClient(port.value)
+      val wsClient = play.test.WSTestClient.newClient(port.value)
       try {
         block(wsClient)
       } finally {
@@ -203,9 +203,9 @@ trait WSSpec extends PlaySpecification with ServerIntegrationSpecification {
     }
 
     "sending a multipart form body" in withServer { ws =>
-      val file = new File(this.getClass.getResource("/testassets/bar.txt").toURI)
+      val file = new File(this.getClass.getResource("/testassets/bar.txt").toURI).toPath
       val dp = new Http.MultipartFormData.DataPart("hello", "world")
-      val fp = new Http.MultipartFormData.FilePart("upload", "bar.txt", "text/plain", FileIO.fromFile(file).asJava)
+      val fp = new Http.MultipartFormData.FilePart("upload", "bar.txt", "text/plain", FileIO.fromPath(file).asJava)
       val source = akka.stream.javadsl.Source.from(util.Arrays.asList(dp, fp))
 
       val res = ws.url("/post").post(source)
@@ -345,9 +345,9 @@ trait WSSpec extends PlaySpecification with ServerIntegrationSpecification {
     }
 
     "send a multipart request body" in withServer { ws =>
-      val file = new File(this.getClass.getResource("/testassets/foo.txt").toURI)
+      val file = new File(this.getClass.getResource("/testassets/foo.txt").toURI).toPath
       val dp = MultipartFormData.DataPart("hello", "world")
-      val fp = MultipartFormData.FilePart("upload", "foo.txt", None, FileIO.fromFile(file))
+      val fp = MultipartFormData.FilePart("upload", "foo.txt", None, FileIO.fromPath(file))
       val source = Source(List(dp, fp))
       val res = ws.url("/post").post(source)
       val body = await(res).json

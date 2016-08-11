@@ -15,33 +15,12 @@ import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import play.libs.ws.ahc.AhcWSClient;
 
 /**
- * Asynchronous API to to query web services, as an http client.
+ * Asynchronous API to query web services, as an http client.
+ *
+ * @deprecated as of 2.6, this class is deprecated in favor of WSAPI.
  */
+@Deprecated
 public class WS {
-
-    /**
-     * Returns the default WSClient object managed by the Play application.
-     *
-     * @return a configured WSClient
-     * @deprecated Please use a WSClient instance using DI (since 2.5)
-     */
-    @Deprecated
-    public static WSClient client() {
-        return play.api.Play.current().injector().instanceOf(WSClient.class);
-    }
-
-    /**
-     * Returns a WSRequest object representing the URL.  You can append additional
-     * properties on the WSRequest by chaining calls, and execute the request to
-     * return an asynchronous {@code Promise<WSResponse>}.
-     *
-     * @param url the URL to request
-     * @deprecated Please use a WSClient instance using DI (since 2.5)
-     */
-    @Deprecated
-    public static WSRequest url(String url) {
-        return client().url(url);
-    }
 
     /**
      * Create a new WSClient.
@@ -54,7 +33,12 @@ public class WS {
      *
      * @param port The port to use on localhost when relative URLs are requested.
      * @return A running WS client.
+     * @deprecated as of 2.6, not to be used.
+     *    This method is not appropriate outside of testing context, because it makes many
+     *    assumptions about the url, starts up a new client and actorsystem on every
+     *    call, and hardcodes the config to something other than the app config.
      */
+    @Deprecated
     public static WSClient newClient(final int port) {
         AsyncHttpClientConfig config = new DefaultAsyncHttpClientConfig.Builder()
                 .setMaxRequestRetry(0).setShutdownQuietPeriod(0).setShutdownTimeout(0).build();

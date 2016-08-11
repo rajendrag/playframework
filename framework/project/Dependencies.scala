@@ -8,7 +8,7 @@ object Dependencies {
 
   val akkaVersion = "2.4.8"
 
-  val specsVersion = "3.6.6"
+  val specsVersion = "3.8.4"
   val specsBuild = Seq(
     "specs2-core",
     "specs2-junit",
@@ -65,7 +65,6 @@ object Dependencies {
   val javaDeps = Seq(
     scalaJava8Compat,
 
-    "org.yaml" % "snakeyaml" % "1.17",
     "org.hibernate" % "hibernate-validator" % "5.2.4.Final",
     "javax.el"      % "javax.el-api"        % "3.0.0", // required by hibernate-validator
 
@@ -91,9 +90,7 @@ object Dependencies {
 
     guava,
     findBugs,
-    logback % Test,
-
-    "org.apache.tomcat" % "tomcat-servlet-api" % "8.0.33"
+    logback % Test
   ) ++ specsBuild.map(_ % Test)
 
   val junitInterface = "com.novocode" % "junit-interface" % "0.11"
@@ -116,7 +113,6 @@ object Dependencies {
     Seq("akka-actor", "akka-slf4j").map("com.typesafe.akka" %% _ % akkaVersion) ++
     jacksons ++
     Seq(
-      "org.scala-stm" %% "scala-stm" % "0.7",
       "commons-codec" % "commons-codec" % "1.10",
 
       guava,
@@ -252,7 +248,7 @@ object Dependencies {
 
   val scalacheckDependencies = Seq(
     "org.specs2"     %% "specs2-scalacheck" % specsVersion % Test,
-    "org.scalacheck" %% "scalacheck"        % "1.12.5"     % Test
+    "org.scalacheck" %% "scalacheck"        % "1.13.2"     % Test
   )
 
   val playServerDependencies = Seq(
